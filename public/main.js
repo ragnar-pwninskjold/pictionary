@@ -1,5 +1,12 @@
 socket = io();
 
+socket.on('newGame', function(data) {
+        if (data[0] == true) {
+            socket.drawerer = true;
+            alert("The word for you to draw is: "+data[1]);
+        }
+    });
+
 var drawing;
 
 var pictionary = function() {
@@ -16,15 +23,17 @@ var pictionary = function() {
     context = canvas[0].getContext('2d');
     canvas[0].width = canvas[0].offsetWidth;
     canvas[0].height = canvas[0].offsetHeight;
-    canvas.on('mousemove', function(event) {
-        if (drawing == true) {
-            var offset = canvas.offset();
-            var position = {x: event.pageX - offset.left,
-                            y: event.pageY - offset.top};
-            draw(position);
-            socket.emit('draw', position);
-        }
-    });
+        canvas.on('mousemove', function(event) {
+            if (socket.drawerer == true) {
+                if (drawing == true) {
+                    var offset = canvas.offset();
+                    var position = {x: event.pageX - offset.left,
+                                    y: event.pageY - offset.top};
+                    draw(position);
+                    socket.emit('draw', position);
+                }
+            }
+        });
 
     $("#guess-input").on("keydown", function(event) {
         if (event.keyCode != 13) {
@@ -50,6 +59,10 @@ var pictionary = function() {
 
     socket.on('guess', function(guess) {
         $("#the-guess").text(guess);
+    });
+
+    socket.on('winner', function(data) {
+        alert("The client with id: " +data+ " has won!");
     });
 };
 

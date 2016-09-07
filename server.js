@@ -8,8 +8,38 @@ app.use(express.static('public'));
 var server = http.Server(app);
 var io = socket_io(server);
 
-io.on('connection', function(socket) {
+count = 0;
+userList = 0;
 
+var WORDS = [
+    "word", "letter", "number", "person", "pen", "class", "people",
+    "sound", "water", "side", "place", "man", "men", "woman", "women", "boy",
+    "girl", "year", "day", "week", "month", "name", "sentence", "line", "air",
+    "land", "home", "hand", "house", "picture", "animal", "mother", "father",
+    "brother", "sister", "world", "head", "page", "country", "question",
+    "answer", "school", "plant", "food", "sun", "state", "eye", "city", "tree",
+    "farm", "story", "sea", "night", "day", "life", "north", "south", "east",
+    "west", "child", "children", "example", "paper", "music", "river", "car",
+    "foot", "feet", "book", "science", "room", "friend", "idea", "fish",
+    "mountain", "horse", "watch", "color", "face", "wood", "list", "bird",
+    "body", "dog", "family", "song", "door", "product", "wind", "ship", "area",
+    "rock", "order", "fire", "problem", "piece", "top", "bottom", "king",
+    "space"
+];
+
+io.on('connection', function(socket) {
+	if (count < 1) {
+		socket.drawerer = true;
+		word = WORDS[Math.floor(Math.random()*WORDS.length)];
+
+		io.sockets.emit('newGame', [socket.drawerer, word]);
+	}
+	else {
+		socket.drawerer = false;
+	}
+
+	console.log(socket.drawerer);
+	count+=1;
 
 	socket.on('draw', function(data) {
 		socket.broadcast.emit('draw', data);
@@ -18,6 +48,20 @@ io.on('connection', function(socket) {
 	socket.on('guess', function(data) {
 		io.sockets.emit('guess', data);
 	});
+
+	socket.on('guess', function(data) {
+		if (data == word) {
+			io.sockets.emit('winner', socket.client.id);
+		}
+	});
+
+	/*socket.on('newGame', function() {
+		socket.drawerer = true;
+		word = WORDS[Math.floor(Math.random()*WORDS.length)];
+		socket.emit('newGame', [socket.drawerer, word]);
+		socket.drawerer = false;
+		socket.broadcast.emit('newGame', [socket.drawerer, null]);
+	});*/
 
 });
 
