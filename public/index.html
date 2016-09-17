@@ -35,6 +35,8 @@ canvas {
     display: block;
     margin: 0 auto;
 }
+
+#word {display: none;}
 </style>
 
 <!-- JS -->
@@ -49,10 +51,16 @@ canvas {
         <div id="guess">
             Make a guess: <input id="guess-input" type="text">
         </div>
+        <button type="button" id="clear">Clear Canvas</button>
+        <div id="word">
+            The word for you to draw is:
+        </div>
     </div>
     <div id="guess-list">
         <h4>The most recent guess is: <span id="the-guess"></span></h4>
     </div>
+    <div id="winner"></div>
+    <div id="room-log"></div>
     <canvas id="canvas"></canvas>
 </div>
 
